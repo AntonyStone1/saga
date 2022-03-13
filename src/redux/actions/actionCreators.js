@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import { CREATE_TODO, TOGGLE_TODO, DELETE_TODO } from '../constans'
+import { CREATE_TODO, TOGGLE_TODO, DELETE_TODO, LOG_IN } from '../constans'
 
 export const createTodo = (val) => ({
   type: CREATE_TODO,
@@ -19,5 +19,11 @@ export const deleteTodo = (e) => ({
   type: DELETE_TODO,
   payload: {
     id: e.currentTarget.id,
+  },
+})
+export const logIn = () => ({
+  type: LOG_IN,
+  payload: {
+    isAuth: true,
   },
 })

@@ -1,12 +1,13 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { BrowserRouter, Routes } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import Router from './components/Router'
-import HomePage from './Pages/HomePage/HomePage'
+
+const isAuth = true
 
 function App() {
   return (
     <BrowserRouter>
-      <Router />
+      <Router authStatus={isAuth} />
     </BrowserRouter>
   )
 }

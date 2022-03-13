@@ -20,8 +20,8 @@ const TodoList = () => {
   const deleteHandle = (e) => {
     dispatch(deleteTodo(e))
   }
-  console.log(todos)
-
+  console.log(process.env)
+  console.log(1)
   return (
     <div>
       {todos?.length > 0 && (
