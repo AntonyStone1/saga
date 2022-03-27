@@ -1,13 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React from 'react'
-import { useAuthState } from 'react-firebase-hooks/auth'
+import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-import { auth } from '../../firebase'
 
 // eslint-disable-next-line react/prop-types
 function SessionRequired({ children }) {
-  const [currentUser] = useAuthState(auth)
-  if (!currentUser) {
+  const { isAuth } = useSelector((state) => state.auth)
+  if (isAuth) {
     return <>{children}</>
   }
   return <Navigate to="/login" />

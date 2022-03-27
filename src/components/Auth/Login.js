@@ -12,18 +12,19 @@ import Box from '@mui/material/Box'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import { CircularProgress } from '@mui/material'
 
 import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import {
-  auth,
-  logInWithEmailAndPassword,
-  signInWithGoogle,
-} from '../../firebase'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import AuthCSS from './Auth.module.css'
+import {
+  loginReq,
+  rememberUser,
+  singinGoogleReq,
+} from '../../redux/actions/actionCreators'
 
-function Copyright(props) {
+export function Copyright(props) {
   return (
     <Typography
       variant="body2"
@@ -41,24 +42,23 @@ function Copyright(props) {
 }
 
 export default function LogIn() {
-  const [currentUser, loading, error] = useAuthState(auth)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { isAuth, requestingAuth, error } = useSelector((state) => state.auth)
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
   const [eyeActive, setEyeActive] = useState(false)
-  const location = useLocation()
   const eyeClickHandle = () => {
     setEyeActive((prev) => !prev)
   }
-  const logIn = (data) => logInWithEmailAndPassword(data.email, data.password)
+  const logIn = (data) => dispatch(loginReq(data))
 
   useEffect(() => {
-    if (currentUser) navigate('/home')
-  }, [currentUser])
-  console.log('user', currentUser)
+    if (isAuth) navigate('/home')
+  }, [isAuth])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -86,7 +86,6 @@ export default function LogIn() {
           <TextField
             {...register('email', {
               required: true,
-              pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
             })}
             margin="normal"
             required
@@ -96,11 +95,6 @@ export default function LogIn() {
             name="email"
             autoComplete="email"
           />
-          {errors?.email?.type === 'pattern' && (
-            <p className={AuthCSS.auth_required}>
-              Invalid email address entered
-            </p>
-          )}
           {errors?.email?.type === 'required' && (
             <p className={AuthCSS.auth_required}>This field is required</p>
           )}
@@ -108,7 +102,6 @@ export default function LogIn() {
             <TextField
               {...register('password', {
                 required: true,
-                pattern: /(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])[0-9a-zA-Z]{8,}/g,
               })}
               margin="normal"
               required
@@ -129,31 +122,38 @@ export default function LogIn() {
           {errors?.password?.type === 'required' && (
             <p className={AuthCSS.auth_required}>This field is required</p>
           )}
-          {errors?.password?.type === 'pattern' && (
-            <p className={AuthCSS.auth_required}>
-              1 capital letter, 1 number, must be 8 characters
-            </p>
+          {error && (
+            <p className={AuthCSS.auth_required}>Invalid email or password</p>
           )}
-          {location.pathname === '/login' ? (
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-          ) : null}
+          <FormControlLabel
+            onClick={() => dispatch(rememberUser())}
+            sx={{
+              padding: '9px',
+            }}
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
           <Button
             type="submit"
+            color="primary"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            {location.pathname === '/login' ? 'Log In' : ' Sign Up'}
+            {requestingAuth || !!Array.from(errors).length ? (
+              <CircularProgress
+                style={{ color: 'white', width: '25px', height: '25px' }}
+              />
+            ) : (
+              'Log In'
+            )}
           </Button>
           <Grid
             container
             sx={{ flexDirection: 'column', alignItems: 'center' }}
           >
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="/reset" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
@@ -162,6 +162,15 @@ export default function LogIn() {
                 Don't have an account? Sign Up
               </Link>
             </Grid>
+            <Button
+              type="button"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={() => dispatch(singinGoogleReq())}
+            >
+              Sign In with google
+            </Button>
           </Grid>
         </form>
       </Box>

@@ -1,3 +1,8 @@
+input {padding: 16px !important;}
+
+button {
+  margin: 24px 0 !important;
+}
 .form_container {
   max-width: 500px !important;
   margin: 0 auto;

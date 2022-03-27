@@ -7,7 +7,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { Box, Checkbox, Typography } from '@material-ui/core'
-import { v4 as uuid } from 'uuid'
 import { toggleTodo, deleteTodo } from '../../redux/actions/actionCreators'
 
 /* eslint-disable react/function-component-definition */
@@ -20,8 +19,6 @@ const TodoList = () => {
   const deleteHandle = (e) => {
     dispatch(deleteTodo(e))
   }
-  console.log(process.env)
-  console.log(1)
   return (
     <div>
       {todos?.length > 0 && (

@@ -15,13 +15,10 @@ import Container from '@mui/material/Container'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { LockOpenOutlined } from '@material-ui/icons'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import {
-  auth,
-  signInWithGoogle,
-  registerWithEmailAndPassword,
-} from '../../firebase'
+import { CircularProgress } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
 import AuthCSS from './Auth.module.css'
+import { singupReq } from '../../redux/actions/actionCreators'
 
 function Copyright(props) {
   return (
@@ -41,26 +38,23 @@ function Copyright(props) {
 }
 
 export default function SignUp() {
-  const [user, loading, error] = useAuthState(auth)
+  const { isAuth, requestingAuth, error } = useSelector((state) => state.auth)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
   const [eyeActive, setEyeActive] = useState(false)
-  const location = useLocation()
   const eyeClickHandle = () => {
     setEyeActive((prev) => !prev)
   }
-  const logIn = (data) =>
-    registerWithEmailAndPassword(data.name, data.email, data.password)
+  const logIn = (data) => dispatch(singupReq(data))
 
-  // useEffect(() => {
-  //   if (user) navigate('/home')
-  // }, [user])
-  console.log('user', user)
-  console.log(loading)
+  useEffect(() => {
+    if (isAuth) navigate('/home')
+  }, [isAuth])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -169,19 +163,25 @@ export default function SignUp() {
               1 capital letter, 1 number, must be 8 characters
             </p>
           )}
-          {location.pathname === '/login' ? (
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-          ) : null}
+          {error && (
+            <p className={AuthCSS.auth_required}>Invalid email or password</p>
+          )}
+          {error && (
+            <p className={AuthCSS.auth_required}>Invalid email or password</p>
+          )}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign Up
+            {requestingAuth ? (
+              <CircularProgress
+                style={{ color: 'white', width: '25px', height: '25px' }}
+              />
+            ) : (
+              'Sign Up'
+            )}
           </Button>
           <Grid
             container

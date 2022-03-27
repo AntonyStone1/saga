@@ -18,18 +18,21 @@ import {
 } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDIXJ5YT7hoNbBFqK3TBcV41-TzIO-7n7w',
-  authDomain: 'fir-auth-6edd8.firebaseapp.com',
-  projectId: 'fir-auth-6edd8',
-  storageBucket: 'fir-auth-6edd8.appspot.com',
-  messagingSenderId: '904760319835',
-  appId: '1:904760319835:web:44fd0d957f114b4e51447e',
-  measurementId: 'G-Q4TYKH9GG7',
+  apiKey: 'AIzaSyDOI0kDE2RGTWEP9cfbSzyeX1K_lFB6WMU',
+  authDomain: 'todo-list-auth-e7eb3.firebaseapp.com',
+  databaseURL:
+    'https://todo-list-auth-e7eb3-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId: 'todo-list-auth-e7eb3',
+  storageBucket: 'todo-list-auth-e7eb3.appspot.com',
+  messagingSenderId: '446437704958',
+  appId: '1:446437704958:web:28d7d17323a735d177d1af',
+  measurementId: 'G-XY57EGRFE6',
 }
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
 const googleProvider = new GoogleAuthProvider()
+
 const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider)
@@ -46,16 +49,10 @@ const signInWithGoogle = async () => {
     }
   } catch (err) {
     console.error(err)
-    alert(err.message)
   }
 }
 const logInWithEmailAndPassword = async (email, password) => {
-  try {
-    await signInWithEmailAndPassword(auth, email, password)
-  } catch (err) {
-    console.error(err)
-    alert(err.message)
-  }
+  await signInWithEmailAndPassword(auth, email, password)
 }
 const registerWithEmailAndPassword = async (name, email, password) => {
   try {
@@ -69,20 +66,13 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     })
   } catch (err) {
     console.error(err)
-    alert(err.message)
   }
 }
 const sendPasswordReset = async (email) => {
-  try {
-    await sendPasswordResetEmail(auth, email)
-    alert('Password reset link sent!')
-  } catch (err) {
-    console.error(err)
-    alert(err.message)
-  }
+  await sendPasswordResetEmail(auth, email)
 }
-const logout = () => {
-  signOut(auth)
+const logout = async () => {
+  await signOut(auth)
 }
 export {
   auth,

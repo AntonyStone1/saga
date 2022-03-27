@@ -1,20 +1,19 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable arrow-body-style */
 /* eslint-disable react/function-component-definition */
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Box, TextField, Button } from '@material-ui/core'
 import { useState } from 'react'
 import { createTodo } from '../../redux/actions/actionCreators'
+import SignOut from '../Auth/Logout'
 
 const CreateTodo = () => {
-  const todo = useSelector((store) => store?.todos)
   const [inputValue, setInputValue] = useState('')
   const dispatch = useDispatch()
   const handleCreateTodo = (val) => {
     dispatch(createTodo(val))
     setInputValue('')
   }
-  console.log(inputValue)
   return (
     <Box
       sx={{
@@ -43,6 +42,7 @@ const CreateTodo = () => {
       >
         Add todo
       </Button>
+      <SignOut />
     </Box>
   )
 }
