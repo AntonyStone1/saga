@@ -18,11 +18,10 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import AuthCSS from './Auth.module.css'
-import {
-  loginReq,
-  rememberUser,
-  singinGoogleReq,
-} from '../../redux/actions/actionCreators'
+
+import { useAuth } from '../../hooks/useAuth/useAuth'
+import { setItem } from '../../utils/localStorage'
+import { auth } from '../../firebase'
 
 export function Copyright(props) {
   return (
@@ -42,9 +41,17 @@ export function Copyright(props) {
 }
 
 export default function LogIn() {
+  const {
+    logIn,
+    isLoading,
+    error,
+    isAuth,
+    logInWithGoogle,
+    rememberUser,
+    isRemember,
+  } = useAuth()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { isAuth, requestingAuth, error } = useSelector((state) => state.auth)
   const {
     register,
     handleSubmit,
@@ -54,11 +61,16 @@ export default function LogIn() {
   const eyeClickHandle = () => {
     setEyeActive((prev) => !prev)
   }
-  const logIn = (data) => dispatch(loginReq(data))
-
+  const login = (data) => logIn(data.email, data.password)
   useEffect(() => {
     if (isAuth) navigate('/home')
   }, [isAuth])
+  useEffect(() => {
+    if (isRemember) {
+      setItem('uid', auth?.currentUser?.uid)
+    }
+  }, [isAuth])
+  console.log(isRemember)
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -78,7 +90,7 @@ export default function LogIn() {
         </Typography>
         <form
           component="form"
-          onSubmit={handleSubmit(logIn)}
+          onSubmit={handleSubmit(login)}
           noValidate
           sx={{ mt: 1 }}
           style={{ position: 'relative', width: '100%' }}
@@ -122,11 +134,11 @@ export default function LogIn() {
           {errors?.password?.type === 'required' && (
             <p className={AuthCSS.auth_required}>This field is required</p>
           )}
-          {error && (
+          {error && error.code !== 'auth/popup-closed-by-user' && (
             <p className={AuthCSS.auth_required}>Invalid email or password</p>
           )}
           <FormControlLabel
-            onClick={() => dispatch(rememberUser())}
+            onClick={rememberUser}
             sx={{
               padding: '9px',
             }}
@@ -140,7 +152,7 @@ export default function LogIn() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            {requestingAuth || !!Array.from(errors).length ? (
+            {isLoading || !!Array.from(errors).length ? (
               <CircularProgress
                 style={{ color: 'white', width: '25px', height: '25px' }}
               />
@@ -167,7 +179,7 @@ export default function LogIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={() => dispatch(singinGoogleReq())}
+              onClick={logInWithGoogle}
             >
               Sign In with google
             </Button>

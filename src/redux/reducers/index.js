@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux'
-import todos from './todos'
-import auth from './auth'
+import authStatus from './authStatus'
 
 const reducer = combineReducers({
-  todos,
-  auth,
+  authStatus,
 })
 
 export default reducer

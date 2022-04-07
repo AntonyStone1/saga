@@ -2,16 +2,15 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable react/function-component-definition */
 import { Button } from '@mui/material'
-import { useDispatch } from 'react-redux'
-import { logoutReq } from '../../redux/actions/actionCreators'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 
-const SignOut = () => {
-  const dispatch = useDispatch()
+const Logout = () => {
+  const { logOut } = useAuth()
   return (
-    <Button color="primary" onClick={() => dispatch(logoutReq())}>
+    <Button color="primary" onClick={logOut}>
       Sign Out
     </Button>
   )
 }
 
-export default SignOut
+export default Logout

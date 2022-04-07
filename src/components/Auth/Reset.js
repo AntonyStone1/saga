@@ -13,28 +13,25 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { resetPassReq } from '../../redux/actions/actionCreators'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 
 import AuthCSS from './Auth.module.css'
 import { Copyright } from './Login'
 
 const Reset = () => {
-  const { isReseted, requestingReset, error } = useSelector(
-    (state) => state.auth,
-  )
-  const dispatch = useDispatch()
+  const { isReseted, isLoading, error, resetPassword } = useAuth()
   const navigate = useNavigate()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const reset = (data) => dispatch(resetPassReq(data.email))
+  const reset = (data) => resetPassword(data.email)
   useEffect(() => {
     if (isReseted) navigate('/login')
   }, [isReseted])
+  console.log('reseted', isReseted)
   return (
     <Container component="main" maxWidth="xs">
       <Box sx={{ marginTop: 8 }}>
@@ -70,7 +67,7 @@ const Reset = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            {requestingReset || !!Array.from(errors).length ? (
+            {isLoading || !!Array.from(errors).length ? (
               <CircularProgress
                 style={{ color: 'white', width: '25px', height: '25px' }}
               />

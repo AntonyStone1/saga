@@ -4,8 +4,6 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import TextField from '@mui/material/TextField'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -13,12 +11,12 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 
 import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { LockOpenOutlined } from '@material-ui/icons'
 import { CircularProgress } from '@mui/material'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import AuthCSS from './Auth.module.css'
-import { singupReq } from '../../redux/actions/actionCreators'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 
 function Copyright(props) {
   return (
@@ -38,9 +36,8 @@ function Copyright(props) {
 }
 
 export default function SignUp() {
-  const { isAuth, requestingAuth, error } = useSelector((state) => state.auth)
+  const { isAuth, isLoading, error, signUp } = useAuth()
   const navigate = useNavigate()
-  const dispatch = useDispatch()
   const {
     register,
     handleSubmit,
@@ -50,7 +47,7 @@ export default function SignUp() {
   const eyeClickHandle = () => {
     setEyeActive((prev) => !prev)
   }
-  const logIn = (data) => dispatch(singupReq(data))
+  const logIn = (data) => signUp(data)
 
   useEffect(() => {
     if (isAuth) navigate('/home')
@@ -163,19 +160,19 @@ export default function SignUp() {
               1 capital letter, 1 number, must be 8 characters
             </p>
           )}
-          {error && (
-            <p className={AuthCSS.auth_required}>Invalid email or password</p>
-          )}
-          {error && (
-            <p className={AuthCSS.auth_required}>Invalid email or password</p>
-          )}
+          {error &&
+            (error.code === 'auth/email-already-in-use' ? (
+              <p className={AuthCSS.auth_required}>This email already in use</p>
+            ) : (
+              <p className={AuthCSS.auth_required}>Invalid email or password</p>
+            ))}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            {requestingAuth ? (
+            {isLoading ? (
               <CircularProgress
                 style={{ color: 'white', width: '25px', height: '25px' }}
               />

@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 
 // eslint-disable-next-line react/prop-types
 function SessionRequired({ children }) {
-  const { isAuth } = useSelector((state) => state.auth)
+  const { isAuth } = useAuth()
   if (isAuth) {
     return <>{children}</>
   }

@@ -2,6 +2,8 @@ export const CREATE_TODO = 'CREATE_TODO'
 export const TOGGLE_TODO = 'TOGGLE_TODO'
 export const DELETE_TODO = 'DELETE_TODO'
 
+export const SET_UID = 'SET_UID'
+
 // login
 export const LOGIN_REQ = 'LOGIN_REQ'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { Box, TextField, Button } from '@material-ui/core'
 import { useState } from 'react'
 import { createTodo } from '../../redux/actions/actionCreators'
-import SignOut from '../Auth/Logout'
+import Logout from '../Auth/Logout'
 
 const CreateTodo = () => {
   const [inputValue, setInputValue] = useState('')
@@ -42,7 +42,7 @@ const CreateTodo = () => {
       >
         Add todo
       </Button>
-      <SignOut />
+      <Logout />
     </Box>
   )
 }
