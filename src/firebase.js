@@ -44,9 +44,11 @@ const signInWithGoogle = async () => {
       email: user.email,
     })
   }
+  return res
 }
 const logInWithEmailAndPassword = async (email, password) => {
-  await signInWithEmailAndPassword(auth, email, password)
+  const res = await signInWithEmailAndPassword(auth, email, password)
+  return res
 }
 const registerWithEmailAndPassword = async (name, email, password) => {
   const res = await createUserWithEmailAndPassword(auth, email, password)
@@ -57,6 +59,7 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     authProvider: 'local',
     email,
   })
+  return res
 }
 const sendPasswordReset = async (email) => {
   await sendPasswordResetEmail(auth, email)

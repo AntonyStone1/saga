@@ -1,13 +1,16 @@
 /* eslint-disable no-return-assign */
 import React, { useState, useContext, createContext } from 'react'
+import { useDispatch } from 'react-redux'
 import {
+  auth,
   logInWithEmailAndPassword,
   logout,
   registerWithEmailAndPassword,
   sendPasswordReset,
   signInWithGoogle,
 } from '../../firebase'
-import { setItem, getItem } from '../../utils/localStorage'
+import { setUID } from '../../redux/actions/actionCreators_auth'
+import { setItem, getItem, removeKey } from '../../utils/localStorage'
 
 const authContext = createContext()
 
@@ -28,14 +31,20 @@ function useProvideAuth() {
   const [isReseted, setIsReseted] = useState(false)
   const [isRemember, setIsRemember] = useState(false)
   let errors = ''
-
+  const dispatch = useDispatch()
   async function logIn(email, pass) {
     setIsLoading(true)
     setError('')
-    await logInWithEmailAndPassword(email, pass).catch((err) => (errors = err))
+    const res = await logInWithEmailAndPassword(email, pass).catch(
+      (err) => (errors = err.code),
+    )
+    const { user } = res
     setError(() => errors)
-    if (errors === '') {
+    if (errors === '' && user?.uid) {
       setAuth(() => true)
+      console.log('hook', setUID(user?.uid))
+
+      dispatch(setUID(user?.uid))
     }
     setIsLoading(() => false)
   }
@@ -43,39 +52,45 @@ function useProvideAuth() {
   async function signUp(data) {
     setIsLoading(true)
     setError('')
-    await registerWithEmailAndPassword(
+    const res = await registerWithEmailAndPassword(
       data?.name,
       data?.email,
       data?.password,
-    ).catch((err) => (errors = err))
+    ).catch((err) => (errors = err.code))
+    const { user } = res
     setError(() => errors)
     if (errors === '') {
       setAuth(() => true)
+      dispatch(setUID(user?.uid))
     }
     setIsLoading(() => false)
   }
   async function logOut() {
     setIsLoading(true)
     setError('')
-    await logout().catch((err) => (errors = err))
+    await logout().catch((err) => (errors = err.code))
     setError(() => errors)
     if (errors === '') {
       setAuth(() => false)
+      document.location.reload()
+      removeKey('uid')
     }
     setIsLoading(() => false)
   }
   async function logInWithGoogle() {
     setError('')
-    await signInWithGoogle().catch((err) => (errors = err))
+    const res = await signInWithGoogle().catch((err) => (errors = err.code))
+    const { user } = res
     setError(() => errors)
     if (errors === '') {
       setAuth(() => true)
+      dispatch(setUID(user?.uid))
     }
   }
   async function resetPassword(email) {
     setIsLoading(true)
     setError('')
-    await sendPasswordReset(email).catch((err) => (errors = err))
+    await sendPasswordReset(email).catch((err) => (errors = err.code))
     setError(() => errors)
     if (errors === '') {
       setIsReseted(() => true)
@@ -89,11 +104,30 @@ function useProvideAuth() {
     }
     return setIsRemember(() => true)
   }
+
+  const genErrText = (err) => {
+    const result = err
+      .split('-')
+      .join(' ')
+      .split('/')
+      .filter((word) => word !== 'auth')
+      .join(' ')
+      .split(' ')
+      .map((word, index) =>
+        index === 0 ? `${word.charAt(0).toUpperCase()}${word.slice(1)}` : word,
+      )
+      .join(' ')
+    return result
+  }
   console.log('isLoading', isLoading)
   console.log('error', error)
   console.log('auth', isAuth)
   return {
     isAuth,
+    isLoading,
+    isRemember,
+    isReseted,
+    haveAccount,
     logIn,
     logInWithGoogle,
     logOut,
@@ -101,11 +135,8 @@ function useProvideAuth() {
     setAuth,
     resetPassword,
     rememberUser,
-    isRemember,
-    isReseted,
-    haveAccount,
     setAccount,
     error,
-    isLoading,
+    genErrText,
   }
 }

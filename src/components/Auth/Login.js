@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AuthCSS from './Auth.module.css'
 
 import { useAuth } from '../../hooks/useAuth/useAuth'
-import { setItem } from '../../utils/localStorage'
+import { getItem, setItem } from '../../utils/localStorage'
 import { auth } from '../../firebase'
 
 export function Copyright(props) {
@@ -49,6 +49,8 @@ export default function LogIn() {
     logInWithGoogle,
     rememberUser,
     isRemember,
+    setAuth,
+    genErrText,
   } = useAuth()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -68,9 +70,14 @@ export default function LogIn() {
   useEffect(() => {
     if (isRemember) {
       setItem('uid', auth?.currentUser?.uid)
+      rememberUser()
     }
   }, [isAuth])
-  console.log(isRemember)
+  useEffect(() => {
+    if (getItem('uid')) {
+      setAuth(() => true)
+    }
+  }, [])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -135,10 +142,10 @@ export default function LogIn() {
             <p className={AuthCSS.auth_required}>This field is required</p>
           )}
           {error && error.code !== 'auth/popup-closed-by-user' && (
-            <p className={AuthCSS.auth_required}>Invalid email or password</p>
+            <p className={AuthCSS.auth_required}>{genErrText(error)}</p>
           )}
           <FormControlLabel
-            onClick={rememberUser}
+            onChange={rememberUser}
             sx={{
               padding: '9px',
             }}

@@ -36,7 +36,7 @@ function Copyright(props) {
 }
 
 export default function SignUp() {
-  const { isAuth, isLoading, error, signUp } = useAuth()
+  const { isAuth, isLoading, error, signUp, genErrText } = useAuth()
   const navigate = useNavigate()
   const {
     register,
@@ -160,12 +160,9 @@ export default function SignUp() {
               1 capital letter, 1 number, must be 8 characters
             </p>
           )}
-          {error &&
-            (error.code === 'auth/email-already-in-use' ? (
-              <p className={AuthCSS.auth_required}>This email already in use</p>
-            ) : (
-              <p className={AuthCSS.auth_required}>Invalid email or password</p>
-            ))}
+          {error && (
+            <p className={AuthCSS.auth_required}>{genErrText(error)}</p>
+          )}
           <Button
             type="submit"
             fullWidth
